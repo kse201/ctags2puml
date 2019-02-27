@@ -1,0 +1,7 @@
+package <%= file %>  {
+    class <%= name %> {
+    <%- members.each do |member| -%>
+      + <%= member %>
+    <%- end -%>
+    }
+}

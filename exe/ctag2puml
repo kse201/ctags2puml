@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+require 'ctag2puml'
+tag_file = File.read(ARGV[0])
+
+tags = tag_file.each_line.map do |line|
+  Ctag2Puml::Tag.new(line)
+end
+
+tags.filter { |tag| tag.kind == :class }.each do |tag|
+  Ctag2Puml::Klass.create(tag.name, tag.file)
+end
+
+# tags.filter{|tag| tag.kind == :member }.map do |tag|
+tags.filter(&:member?).map do |tag|
+  klass = Ctag2Puml::Klass.get(tag.klass_name, tag.file)
+  klass.add_members(tag.name)
+end
+
+print "@startuml{test.png}\n"
+Ctag2Puml::Klass.all.each { |k| print k }
+print "@enduml\n"
